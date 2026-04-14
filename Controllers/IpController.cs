@@ -21,20 +21,24 @@ namespace BlockedCountries.Controllers
             _logRepo = logRepo;
         }
         [HttpGet("check-block")]
-        public async Task<IActionResult> CheckBlock()
+        public async Task<IActionResult> CheckBlock([FromQuery] string? testIp = null)
         {
-            var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
-            if (ip == "::1" || string.IsNullOrEmpty(ip) || ip == "127.0.0.1")
+            var ip = testIp ?? HttpContext.Connection.RemoteIpAddress?.ToString();
+
+            if (string.IsNullOrEmpty(ip) || ip == "::1" || ip == "127.0.0.1")
             {
-                return BadRequest(new { Message = "Cannot lookup Localhost IP. Please deploy or provide an external IP." });
+                return BadRequest(new
+                {
+                    Message = "Localhost detected. Please provide a test IP in the query string to verify blocking logic.",
+                    Example = "/api/ip/check-block?testIp=8.8.8.8"
+                });
             }
 
             var info = await _geoService.GetCountryInfoAsync(ip);
             if (info == null) return StatusCode(500, "Could not determine location.");
 
-            bool isPermanent = _permanentRepo.IsCountryBlocked(info.CountryCode);
-            bool isTemp = _tempRepo.IsCountryBlocked(info.CountryCode);
-
+            bool isPermanent = _permanentRepo.IsCountryBlocked(info.CountryCode.ToUpper());
+            bool isTemp = _tempRepo.IsCountryBlocked(info.CountryCode.ToUpper());
             bool isBlocked = isPermanent || isTemp;
 
             _logRepo.AddLog(new BlockAttemptLogResponse
@@ -43,7 +47,7 @@ namespace BlockedCountries.Controllers
                 CountryCode = info.CountryCode,
                 IsBlocked = isBlocked,
                 Timestamp = DateTime.UtcNow,
-                UserAgent = Request.Headers["User-Agent"].ToString()
+                UserAgent = Request.Headers.ContainsKey("User-Agent") ? Request.Headers["User-Agent"].ToString() : "Unknown"
             });
 
             return Ok(new IpBlockCheckResponse

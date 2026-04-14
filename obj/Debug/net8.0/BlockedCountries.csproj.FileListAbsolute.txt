@@ -49,3 +49,4 @@ H:\.NET Core Projects\practice tasks\BlockedCountries\bin\Debug\net8.0\Microsoft
 H:\.NET Core Projects\practice tasks\BlockedCountries\bin\Debug\net8.0\Microsoft.Extensions.Primitives.dll
 H:\.NET Core Projects\practice tasks\BlockedCountries\bin\Debug\net8.0\Newtonsoft.Json.dll
 H:\.NET Core Projects\practice tasks\BlockedCountries\bin\Debug\net8.0\System.Diagnostics.DiagnosticSource.dll
+H:\.NET Core Projects\practice tasks\BlockedCountries\obj\Debug\net8.0\BlockedCountries.sourcelink.json

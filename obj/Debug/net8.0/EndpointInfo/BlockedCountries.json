@@ -133,6 +133,15 @@
         "tags": [
           "Ip"
         ],
+        "parameters": [
+          {
+            "name": "testIp",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
